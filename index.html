@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
+        <style>
+        #map {
+            width: 1141px;
+            height: 463px;
+        }
+        </style>
+        <title></title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/multi-style-layer.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-measure.js"></script>
+        <script src="js/proj4.js"></script>
+        <script src="js/proj4leaflet.js"></script>
+        <script src="data/LimiteMunicipalCapaoCanoa_IBGE2018_sirgas_1.js"></script>
+        <script src="data/Trecho_Drenagem_clip_2.js"></script>
+        <script src="data/Area_Edificada_GEOshp_3.js"></script>
+        <script src="data/Terreno_Sujeito_Inundacao_clip_4.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+
+            if (e.target.feature.geometry.type === 'LineString') {
+              highlightLayer.setStyle({
+                color: '#ffff00',
+              });
+            } else {
+              highlightLayer.setStyle({
+                fillColor: '#ffff00',
+                fillOpacity: 1
+              });
+            }
+            highlightLayer.openPopup();
+        }
+        var crs = new L.Proj.CRS('EPSG:31982', '+proj=utm +zone=22 +south +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs', {
+            resolutions: [2800, 1400, 700, 350, 175, 84, 42, 21, 11.2, 5.6, 2.8, 1.4, 0.7, 0.35, 0.14, 0.07],
+        });
+        var map = L.map('map', {
+            crs: crs,
+            continuousWorld: false,
+            worldCopyJump: false, 
+            zoomControl:true, maxZoom:28, minZoom:1
+        }).fitBounds([[-29.77999378988738,-50.24849638029935],[-29.596916431448932,-49.73955533186149]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'meters',
+            secondaryLengthUnit: 'kilometers',
+            primaryAreaUnit: 'sqmeters',
+            secondaryAreaUnit: 'hectares'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .className += ' fas fa-ruler';
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+            map.setMaxBounds(map.getBounds());
+        }
+        var layer_OSMStandard_0 = L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            opacity: 1.0,
+            attribution: '<a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors, CC-BY-SA</a>',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 19
+        });
+        layer_OSMStandard_0;
+        map.addLayer(layer_OSMStandard_0);
+        function pop_LimiteMunicipalCapaoCanoa_IBGE2018_sirgas_1(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2"><strong>NM_MUNICIP</strong><br />' + (feature.properties['NM_MUNICIP'] !== null ? Autolinker.link(feature.properties['NM_MUNICIP'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['CD_GEOCMU'] !== null ? Autolinker.link(feature.properties['CD_GEOCMU'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_LimiteMunicipalCapaoCanoa_IBGE2018_sirgas_1_0() {
+            return {
+                pane: 'pane_LimiteMunicipalCapaoCanoa_IBGE2018_sirgas_1',
+                opacity: 1,
+                color: 'rgba(253,249,111,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 4.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_LimiteMunicipalCapaoCanoa_IBGE2018_sirgas_1');
+        map.getPane('pane_LimiteMunicipalCapaoCanoa_IBGE2018_sirgas_1').style.zIndex = 401;
+        map.getPane('pane_LimiteMunicipalCapaoCanoa_IBGE2018_sirgas_1').style['mix-blend-mode'] = 'normal';
+        var layer_LimiteMunicipalCapaoCanoa_IBGE2018_sirgas_1 = new L.geoJson(json_LimiteMunicipalCapaoCanoa_IBGE2018_sirgas_1, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_LimiteMunicipalCapaoCanoa_IBGE2018_sirgas_1',
+            layerName: 'layer_LimiteMunicipalCapaoCanoa_IBGE2018_sirgas_1',
+            pane: 'pane_LimiteMunicipalCapaoCanoa_IBGE2018_sirgas_1',
+            onEachFeature: pop_LimiteMunicipalCapaoCanoa_IBGE2018_sirgas_1,
+            style: style_LimiteMunicipalCapaoCanoa_IBGE2018_sirgas_1_0,
+        });
+        bounds_group.addLayer(layer_LimiteMunicipalCapaoCanoa_IBGE2018_sirgas_1);
+        map.addLayer(layer_LimiteMunicipalCapaoCanoa_IBGE2018_sirgas_1);
+        function pop_Trecho_Drenagem_clip_2(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['nome'] !== null ? Autolinker.link(feature.properties['nome'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['larguraMed'] !== null ? Autolinker.link(feature.properties['larguraMed'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['nomeAbrev'] !== null ? Autolinker.link(feature.properties['nomeAbrev'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['d_geometri'] !== null ? Autolinker.link(feature.properties['d_geometri'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['d_coincide'] !== null ? Autolinker.link(feature.properties['d_coincide'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['d_dentroDe'] !== null ? Autolinker.link(feature.properties['d_dentroDe'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['d_regime'] !== null ? Autolinker.link(feature.properties['d_regime'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_Trecho_Drenagem_clip_2_0() {
+            return {
+                pane: 'pane_Trecho_Drenagem_clip_2',
+                opacity: 1,
+                color: 'rgba(72,123,182,1.0)',
+                dashArray: '',
+                lineCap: 'round',
+                lineJoin: 'round',
+                weight: 3.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Trecho_Drenagem_clip_2');
+        map.getPane('pane_Trecho_Drenagem_clip_2').style.zIndex = 402;
+        map.getPane('pane_Trecho_Drenagem_clip_2').style['mix-blend-mode'] = 'normal';
+        var layer_Trecho_Drenagem_clip_2 = new L.geoJson(json_Trecho_Drenagem_clip_2, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Trecho_Drenagem_clip_2',
+            layerName: 'layer_Trecho_Drenagem_clip_2',
+            pane: 'pane_Trecho_Drenagem_clip_2',
+            onEachFeature: pop_Trecho_Drenagem_clip_2,
+            style: style_Trecho_Drenagem_clip_2_0,
+        });
+        bounds_group.addLayer(layer_Trecho_Drenagem_clip_2);
+        map.addLayer(layer_Trecho_Drenagem_clip_2);
+        function pop_Area_Edificada_GEOshp_3(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['nome'] !== null ? Autolinker.link(feature.properties['nome'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['nomeAbrev'] !== null ? Autolinker.link(feature.properties['nomeAbrev'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['d_geometri'] !== null ? Autolinker.link(feature.properties['d_geometri'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        var pattern_Area_Edificada_GEOshp_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#de2a2a',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 315
+        });
+        pattern_Area_Edificada_GEOshp_3_0.addTo(map);
+        function style_Area_Edificada_GEOshp_3_0() {
+            return {
+                pane: 'pane_Area_Edificada_GEOshp_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_Area_Edificada_GEOshp_3_0,
+                interactive: true,
+            }
+        }
+        var pattern_Area_Edificada_GEOshp_3_1 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#de2a2a',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_Area_Edificada_GEOshp_3_1.addTo(map);
+        function style_Area_Edificada_GEOshp_3_1() {
+            return {
+                pane: 'pane_Area_Edificada_GEOshp_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_Area_Edificada_GEOshp_3_1,
+                interactive: true,
+            }
+        }
+        function style_Area_Edificada_GEOshp_3_2() {
+            return {
+                pane: 'pane_Area_Edificada_GEOshp_3',
+                opacity: 1,
+                color: 'rgba(222,42,42,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Area_Edificada_GEOshp_3');
+        map.getPane('pane_Area_Edificada_GEOshp_3').style.zIndex = 403;
+        map.getPane('pane_Area_Edificada_GEOshp_3').style['mix-blend-mode'] = 'normal';
+        var layer_Area_Edificada_GEOshp_3 = new L.geoJson.multiStyle(json_Area_Edificada_GEOshp_3, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Area_Edificada_GEOshp_3',
+            layerName: 'layer_Area_Edificada_GEOshp_3',
+            pane: 'pane_Area_Edificada_GEOshp_3',
+            onEachFeature: pop_Area_Edificada_GEOshp_3,
+            styles: [style_Area_Edificada_GEOshp_3_0,style_Area_Edificada_GEOshp_3_1,style_Area_Edificada_GEOshp_3_2,]
+        });
+        bounds_group.addLayer(layer_Area_Edificada_GEOshp_3);
+        map.addLayer(layer_Area_Edificada_GEOshp_3);
+        function pop_Terreno_Sujeito_Inundacao_clip_4(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['nome'] !== null ? Autolinker.link(feature.properties['nome'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['periodicid'] !== null ? Autolinker.link(feature.properties['periodicid'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['nomeAbrev'] !== null ? Autolinker.link(feature.properties['nomeAbrev'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['d_geometri'] !== null ? Autolinker.link(feature.properties['d_geometri'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_Terreno_Sujeito_Inundacao_clip_4_0() {
+            return {
+                pane: 'pane_Terreno_Sujeito_Inundacao_clip_4',
+                stroke: false, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(163,205,185,1.0)',
+                interactive: true,
+            }
+        }
+        function style_Terreno_Sujeito_Inundacao_clip_4_1() {
+            return {
+                pane: 'pane_Terreno_Sujeito_Inundacao_clip_4',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Terreno_Sujeito_Inundacao_clip_4');
+        map.getPane('pane_Terreno_Sujeito_Inundacao_clip_4').style.zIndex = 404;
+        map.getPane('pane_Terreno_Sujeito_Inundacao_clip_4').style['mix-blend-mode'] = 'normal';
+        var layer_Terreno_Sujeito_Inundacao_clip_4 = new L.geoJson.multiStyle(json_Terreno_Sujeito_Inundacao_clip_4, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Terreno_Sujeito_Inundacao_clip_4',
+            layerName: 'layer_Terreno_Sujeito_Inundacao_clip_4',
+            pane: 'pane_Terreno_Sujeito_Inundacao_clip_4',
+            onEachFeature: pop_Terreno_Sujeito_Inundacao_clip_4,
+            styles: [style_Terreno_Sujeito_Inundacao_clip_4_0,style_Terreno_Sujeito_Inundacao_clip_4_1,]
+        });
+        bounds_group.addLayer(layer_Terreno_Sujeito_Inundacao_clip_4);
+        map.addLayer(layer_Terreno_Sujeito_Inundacao_clip_4);
+        setBounds();
+        </script>
+    </body>
+</html>
